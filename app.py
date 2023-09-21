@@ -73,153 +73,153 @@ st.write("---")
 
 if st.sidebar.button('Run Query'):
 
-    if len(origins) == 0:
+    #if len(origins) == 0:
         #og.error('Data Load Too High - Please Select A Few Origin Airports')
-        pass
-    elif len(destinations) == 0:
+       # pass
+   # elif len(destinations) == 0:
         #d.error('Data Load Too High - Please Select A Few Destination Airports')
-        pass
-    else:
+        #pass
+    #else:
         
 
-        m = st.container()
+    m = st.container()
 
-        mcol1, mcol2, mcol3 = m.columns(3)
+    mcol1, mcol2, mcol3 = m.columns(3)
 
-        mcol1.metric('Total Miles Travelled', helper.format_number(sub_df.Miles.sum()))
-        mcol2.metric('Total Money Spent', f'USD {helper.format_number((sub_df.NumTicketsOrdered * sub_df.PricePerTicket).sum())}')
-        mcol3.metric('Average Ticket Price', f'USD {helper.format_number(sub_df.PricePerTicket.mean())}')
+    mcol1.metric('Total Miles Travelled', helper.format_number(sub_df.Miles.sum()))
+    mcol2.metric('Total Money Spent', f'USD {helper.format_number((sub_df.NumTicketsOrdered * sub_df.PricePerTicket).sum())}')
+    mcol3.metric('Average Ticket Price', f'USD {helper.format_number(sub_df.PricePerTicket.mean())}')
 
 
-        st.write("---")
+    st.write("---")
 
-        center_latitude = 39.91523769591209
-        center_longitude = -101.47642592426148
+    center_latitude = 39.91523769591209
+    center_longitude = -101.47642592426148
 
-        st.header('Routes')
-        st.caption('Here, all the available routes in your selection are visualized. The green color indicates the start of the route, while red indicates the end of the route.')
+    st.header('Routes')
+    st.caption('Here, all the available routes in your selection are visualized. The green color indicates the start of the route, while red indicates the end of the route.')
 
-        unique_pairs_df = sub_df.drop_duplicates(subset=['Origin', 'Dest'], keep='first')
-        unique_pairs_df.reset_index(drop=True, inplace=True)
-        unique_pairs_df['origin_coordinates'] = [list(x) for x in zip(unique_pairs_df.origin_longitude, unique_pairs_df.origin_latitude)]
-        unique_pairs_df['dest_coordinates'] = [list(x) for x in zip(unique_pairs_df.dest_longitude, unique_pairs_df.dest_latitude)]
+    unique_pairs_df = sub_df.drop_duplicates(subset=['Origin', 'Dest'], keep='first')
+    unique_pairs_df.reset_index(drop=True, inplace=True)
+    unique_pairs_df['origin_coordinates'] = [list(x) for x in zip(unique_pairs_df.origin_longitude, unique_pairs_df.origin_latitude)]
+    unique_pairs_df['dest_coordinates'] = [list(x) for x in zip(unique_pairs_df.dest_longitude, unique_pairs_df.dest_latitude)]
 
-        with st.spinner('Creating Routes Plot. Please Wait...'):
-            st.pydeck_chart(
-                pdk.Deck(
-                    map_style = 'road',
-                    layers = [
-                        pdk.Layer(
-                        "GreatCircleLayer",
-                        unique_pairs_df,
-                        pickable=True,
-                        get_stroke_width=20,
-                        get_source_position="origin_coordinates",
-                        get_target_position="dest_coordinates",
-                        get_source_color=[21, 180, 52],
-                        get_target_color=[136, 8, 8],
-                        auto_highlight=True,
+    with st.spinner('Creating Routes Plot. Please Wait...'):
+        st.pydeck_chart(
+            pdk.Deck(
+                map_style = 'road',
+                layers = [
+                    pdk.Layer(
+                    "GreatCircleLayer",
+                    unique_pairs_df,
+                    pickable=True,
+                    get_stroke_width=20,
+                    get_source_position="origin_coordinates",
+                    get_target_position="dest_coordinates",
+                    get_source_color=[21, 180, 52],
+                    get_target_color=[136, 8, 8],
+                    auto_highlight=True,
+                )
+                ],
+                initial_view_state =  
+                    pdk.ViewState(
+                        longitude=center_longitude,
+                        latitude=center_latitude,
+                        zoom=3,
+                        min_zoom=3,
+                        max_zoom=15,
+                        pitch=40.5,
+                        #bearing=-27.36)
                     )
-                    ],
-                    initial_view_state =  
-                        pdk.ViewState(
-                            longitude=center_longitude,
-                            latitude=center_latitude,
-                            zoom=3,
-                            min_zoom=3,
-                            max_zoom=15,
-                            pitch=40.5,
-                            #bearing=-27.36)
-                        )
 
-                )
             )
+        )
 
-        st.write("---")
+    st.write("---")
 
-        p = st.container()
+    p = st.container()
 
-        pcol1, pcol2 = st.columns(2)
+    pcol1, pcol2 = st.columns(2)
 
 
-        
+    
 
-        pcol1.header('Outbound Flights')
-        pcol1.caption('Here, the outbound flights are visualized. Hover over the airports with your cursor to see the exact number of outbound flights.')
-        
-        with st.spinner('Creating Outbound Flights Plot. Please Wait...'):
-            pcol1.pydeck_chart(
-                pdk.Deck(
-                    map_style = 'road',
-                    layers = [
-                        pdk.Layer(
-                        'HexagonLayer',  # `type` positional argument is here
-                        sub_df,
-                        get_position=['origin_longitude', 'origin_latitude'],
-                        auto_highlight=True,
-                        elevation_scale=50,
-                        pickable=True,
-                        elevation_range=[0, 15000],
-                        extruded=True,
-                        coverage=40)
-                    ],
-                    initial_view_state =  
-                        pdk.ViewState(
-                            longitude=center_longitude,
-                            latitude=center_latitude,
-                            zoom=2,
-                            min_zoom=2,
-                            max_zoom=15,
-                            pitch=40.5,
-                            #bearing=-27.36)
-                        ),
-                    tooltip={
-                        'html': '<b>Outbound Flights:</b> {elevationValue}',
-                        'style': {
-                            'color': 'white'
-                        }
-                    }
-
-                )
-            )
-
-        pcol2.header('Inbound Flights')
-        pcol2.caption('Here, the inbound flights are visualized. Hover over the airports with your cursor to see the exact number of inbound flights.')
-
-        with st.spinner('Creating Inbound Flights Plot. Please Wait...'):
-            pcol2.pydeck_chart(
-                pdk.Deck(
-                    map_style = 'road',
-                    layers = [
-                        pdk.Layer(
-                        'HexagonLayer',  # `type` positional argument is here
-                        sub_df,
-                        get_position=['dest_longitude', 'dest_latitude'],
-                        auto_highlight=True,
-                        elevation_scale=50,
-                        pickable=True,
-                        elevation_range=[0, 15000],
-                        extruded=True,
-                        coverage=40,
-                        radius = 1000)
-                    ],
-                    initial_view_state =  
-                        pdk.ViewState(
-                            longitude=center_longitude,
-                            latitude=center_latitude,
-                            zoom=2,
-                            min_zoom=2,
-                            max_zoom=15,
-                            pitch=40.5,
-                            #bearing=-27.36)
-                        ),
-                    tooltip={
-                    'html': '<b>Inbound Flights:</b> {elevationValue}',
+    pcol1.header('Outbound Flights')
+    pcol1.caption('Here, the outbound flights are visualized. Hover over the airports with your cursor to see the exact number of outbound flights.')
+    
+    with st.spinner('Creating Outbound Flights Plot. Please Wait...'):
+        pcol1.pydeck_chart(
+            pdk.Deck(
+                map_style = 'road',
+                layers = [
+                    pdk.Layer(
+                    'HexagonLayer',  # `type` positional argument is here
+                    sub_df,
+                    get_position=['origin_longitude', 'origin_latitude'],
+                    auto_highlight=True,
+                    elevation_scale=50,
+                    pickable=True,
+                    elevation_range=[0, 15000],
+                    extruded=True,
+                    coverage=40)
+                ],
+                initial_view_state =  
+                    pdk.ViewState(
+                        longitude=center_longitude,
+                        latitude=center_latitude,
+                        zoom=2,
+                        min_zoom=2,
+                        max_zoom=15,
+                        pitch=40.5,
+                        #bearing=-27.36)
+                    ),
+                tooltip={
+                    'html': '<b>Outbound Flights:</b> {elevationValue}',
                     'style': {
                         'color': 'white'
                     }
                 }
 
-                )
             )
+        )
+
+    pcol2.header('Inbound Flights')
+    pcol2.caption('Here, the inbound flights are visualized. Hover over the airports with your cursor to see the exact number of inbound flights.')
+
+    with st.spinner('Creating Inbound Flights Plot. Please Wait...'):
+        pcol2.pydeck_chart(
+            pdk.Deck(
+                map_style = 'road',
+                layers = [
+                    pdk.Layer(
+                    'HexagonLayer',  # `type` positional argument is here
+                    sub_df,
+                    get_position=['dest_longitude', 'dest_latitude'],
+                    auto_highlight=True,
+                    elevation_scale=50,
+                    pickable=True,
+                    elevation_range=[0, 15000],
+                    extruded=True,
+                    coverage=40,
+                    radius = 1000)
+                ],
+                initial_view_state =  
+                    pdk.ViewState(
+                        longitude=center_longitude,
+                        latitude=center_latitude,
+                        zoom=2,
+                        min_zoom=2,
+                        max_zoom=15,
+                        pitch=40.5,
+                        #bearing=-27.36)
+                    ),
+                tooltip={
+                'html': '<b>Inbound Flights:</b> {elevationValue}',
+                'style': {
+                    'color': 'white'
+                }
+            }
+
+            )
+        )
 
