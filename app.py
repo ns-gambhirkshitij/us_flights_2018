@@ -65,6 +65,8 @@ This interactive web-app visualizes the flights in the US in 2018.
 In the sidebar on the left, select the airlines, origin airports and destination airports you would like to see data from, along with which quarter of the year you are interested in.
 If no selection is made in a box, all data of that field is used. This can make the program really slow, so please make sure to select only the airlines and airports that your are interested in. And have fun!
 """)
+st.caption("""The original data is 9M+ rows of domestic flights in the US, but for the sake of app performance, this data has been shortened down to 100.000 rows.""")
+st.caption("""Data Source: https://www.kaggle.com/datasets/zernach/2018-airplane-flights""")
 st.caption('Made by Kshitij Gambhir, 24927232, UTS')
 
 st.write("---")
