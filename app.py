@@ -74,9 +74,11 @@ st.write("---")
 if st.sidebar.button('Run Query'):
 
     if len(origins) == 0:
-        og.error('Data Load Too High - Please Select A Few Origin Airports')
+        #og.error('Data Load Too High - Please Select A Few Origin Airports')
+        pass
     elif len(destinations) == 0:
-        d.error('Data Load Too High - Please Select A Few Destination Airports')
+        #d.error('Data Load Too High - Please Select A Few Destination Airports')
+        pass
     else:
         
 
