@@ -5,7 +5,7 @@ import pydeck as pdk
 
 @st.cache_resource
 def load_data():
-    df = pd.read_csv('flight_data.csv')
+    df = pd.read_csv('flight_data_shortened.csv')
     airports = pd.read_csv('airports.csv')
 
     # Origin Coordinates + Origin Airport Names
